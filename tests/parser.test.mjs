@@ -6,6 +6,7 @@ import {
   getInitialWorkoutState,
   getUrlState,
   parseWorkoutMarkdown,
+  renderCategoryListHtml,
   resolveCategoryIndex,
   slugifyCategory,
 } from '../app.mjs';
@@ -161,4 +162,28 @@ test('buildWorkoutUrl writes day and category query params', () => {
     buildWorkoutUrl('http://localhost:8000/?day=strength&category=warm-up', 'athletic', 'power-development'),
     'http://localhost:8000/?day=athletic&category=power-development',
   );
+});
+
+test('renderCategoryListHtml expands only the active category inline', () => {
+  const html = renderCategoryListHtml(
+    [
+      {
+        name: 'Main Lower Strength',
+        setsReps: '3-5 x 3-6',
+        exercises: ['Back Squat', 'Trap Bar Deadlift'],
+      },
+      {
+        name: 'Main Upper Push',
+        setsReps: '3-4 x 4-8',
+        exercises: ['Bench Press', 'Push Press'],
+      },
+    ],
+    1,
+  );
+
+  assert.match(html, /aria-expanded="false"/);
+  assert.match(html, /aria-expanded="true"/);
+  assert.doesNotMatch(html, /Back Squat/);
+  assert.match(html, /Bench Press/);
+  assert.match(html, /3-4 sets x 4-8 reps/);
 });

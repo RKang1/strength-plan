@@ -161,34 +161,23 @@ async function loadWorkout(workoutId, requestedCategorySlug = '') {
 
 function showLoading() {
   const categoryList = document.querySelector('[data-category-list]');
-  const details = document.querySelector('[data-category-details]');
 
   if (categoryList) {
     categoryList.innerHTML = '<p class="muted">Loading workout...</p>';
-  }
-
-  if (details) {
-    details.innerHTML = '';
   }
 }
 
 function showError(message) {
   const categoryList = document.querySelector('[data-category-list]');
-  const details = document.querySelector('[data-category-details]');
 
   if (categoryList) {
-    categoryList.innerHTML = '';
-  }
-
-  if (details) {
-    details.innerHTML = `<div class="empty-state"><h2>Unable to load workout</h2><p>${escapeHtml(message)}</p></div>`;
+    categoryList.innerHTML = `<div class="empty-state"><h2>Unable to load workout</h2><p>${escapeHtml(message)}</p></div>`;
   }
 }
 
 function render() {
   renderDaySelector();
   renderCategoryList();
-  renderCategoryDetails();
 }
 
 function updateUrlState() {
@@ -228,48 +217,41 @@ function renderCategoryList() {
     return;
   }
 
-  container.innerHTML = currentWorkout.categories
-    .map((category, index) => {
-      const isActive = index === currentCategoryIndex;
-      return `<button class="category-button${isActive ? ' is-active' : ''}" type="button" data-category-index="${index}" aria-pressed="${isActive}">
-        <span>${escapeHtml(category.name)}</span>
-        <small>${escapeHtml(category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed')}</small>
-      </button>`;
-    })
-    .join('');
+  container.innerHTML = renderCategoryListHtml(currentWorkout.categories, currentCategoryIndex);
 
   container.querySelectorAll('[data-category-index]').forEach((button) => {
     button.addEventListener('click', () => {
       currentCategoryIndex = Number(button.dataset.categoryIndex);
       updateUrlState();
       renderCategoryList();
-      renderCategoryDetails();
     });
   });
 }
 
-function renderCategoryDetails() {
-  const container = document.querySelector('[data-category-details]');
-
-  if (!container || !currentWorkout) {
-    return;
+export function renderCategoryListHtml(categories, activeIndex) {
+  if (!categories.length) {
+    return '<div class="empty-state"><h2>No categories found</h2><p>Add categories to the selected Markdown file.</p></div>';
   }
 
-  const category = currentWorkout.categories[currentCategoryIndex];
+  return categories
+    .map((category, index) => {
+      const isActive = index === activeIndex;
+      const panelId = `category-panel-${index}`;
+      const buttonId = `category-button-${index}`;
+      const setsReps = category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed';
 
-  if (!category) {
-    container.innerHTML = '<div class="empty-state"><h2>No categories found</h2><p>Add categories to the selected Markdown file.</p></div>';
-    return;
-  }
-
-  const exercises = renderExercises(category);
-
-  container.innerHTML = `<section class="details-panel">
-    <p class="eyebrow">${escapeHtml(currentWorkout.title)}</p>
-    <h2>${escapeHtml(category.name)}</h2>
-    <p class="sets-reps">${escapeHtml(category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed')}</p>
-    ${exercises}
-  </section>`;
+      return `<section class="category-item${isActive ? ' is-active' : ''}">
+        <button class="category-button" id="${buttonId}" type="button" data-category-index="${index}" aria-expanded="${isActive}" aria-controls="${panelId}">
+          <span>${escapeHtml(category.name)}</span>
+          <small>${escapeHtml(setsReps)}</small>
+        </button>
+        ${isActive ? `<div class="category-panel" id="${panelId}" role="region" aria-labelledby="${buttonId}">
+          <p class="sets-reps">${escapeHtml(setsReps)}</p>
+          ${renderExercises(category)}
+        </div>` : ''}
+      </section>`;
+    })
+    .join('');
 }
 
 function renderExercises(category) {

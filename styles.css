@@ -43,25 +43,10 @@ button {
   margin-bottom: 24px;
 }
 
-.eyebrow {
-  margin: 0 0 6px;
-  color: var(--accent-strong);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-h1,
 h2 {
   margin: 0;
   line-height: 1.1;
   letter-spacing: 0;
-}
-
-h1 {
-  max-width: 680px;
-  font-size: clamp(2rem, 4vw, 4rem);
 }
 
 .day-selector {
@@ -95,14 +80,11 @@ h1 {
 }
 
 .workout-browser {
-  display: grid;
-  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-  gap: 20px;
-  align-items: start;
+  width: min(760px, 100%);
+  margin: 0 auto;
 }
 
 .category-sidebar,
-.details-panel,
 .empty-state {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -123,13 +105,19 @@ h1 {
   gap: 8px;
 }
 
+.category-item {
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--surface-strong);
+}
+
 .category-button {
   display: grid;
   width: 100%;
   gap: 4px;
   padding: 12px;
   border-radius: 8px;
-  background: var(--surface-strong);
+  background: transparent;
   color: var(--text);
   text-align: left;
 }
@@ -143,33 +131,35 @@ h1 {
   font-weight: 700;
 }
 
-.category-button.is-active {
+.category-item.is-active {
   outline: 2px solid var(--accent);
   background: var(--accent-soft);
 }
 
-.category-details {
-  min-width: 0;
-}
-
-.details-panel,
 .empty-state {
-  min-height: 420px;
   padding: 28px;
 }
 
-.details-panel h2,
 .empty-state h2 {
   margin-bottom: 10px;
   font-size: clamp(1.8rem, 3vw, 3rem);
 }
 
+.category-panel {
+  display: grid;
+  gap: 12px;
+  padding: 0 14px 14px;
+  animation: reveal-category 160ms ease-out;
+  transform-origin: top;
+}
+
 .sets-reps {
   display: inline-flex;
-  margin: 0 0 22px;
+  width: fit-content;
+  margin: 0;
   padding: 6px 10px;
   border-radius: 6px;
-  background: var(--accent-soft);
+  background: var(--surface);
   color: var(--accent-strong);
   font-weight: 850;
 }
@@ -221,6 +211,18 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+@keyframes reveal-category {
+  from {
+    opacity: 0;
+    transform: scaleY(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
 @media (max-width: 760px) {
   .app-shell {
     width: min(100% - 20px, 1120px);
@@ -234,23 +236,18 @@ button:focus-visible {
 
   .app-header {
     align-items: start;
+    justify-items: center;
   }
 
   .day-selector {
-    width: 100%;
+    width: min(100%, 340px);
   }
 
   .segmented-button {
     flex: 1;
   }
 
-  .workout-browser {
-    grid-template-columns: 1fr;
-  }
-
-  .details-panel,
   .empty-state {
-    min-height: auto;
     padding: 20px;
   }
 }
