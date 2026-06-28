@@ -4,7 +4,7 @@ const workouts = [
 ];
 
 let currentWorkout = null;
-let currentCategoryIndex = 0;
+let currentCategoryIndex = -1;
 
 export function parseWorkoutMarkdown(markdown, id) {
   const lines = markdown.split(/\r?\n/);
@@ -92,11 +92,15 @@ export function slugifyCategory(value) {
 
 export function resolveCategoryIndex(categories, categorySlug) {
   if (!categorySlug) {
-    return 0;
+    return -1;
   }
 
   const index = categories.findIndex((category) => slugifyCategory(category.name) === categorySlug);
-  return index >= 0 ? index : 0;
+  return index >= 0 ? index : -1;
+}
+
+export function getNextCategoryIndex(currentIndex, selectedIndex) {
+  return currentIndex === selectedIndex ? -1 : selectedIndex;
 }
 
 export function getUrlState(windowLike = globalThis.window) {
@@ -221,7 +225,7 @@ function renderCategoryList() {
 
   container.querySelectorAll('[data-category-index]').forEach((button) => {
     button.addEventListener('click', () => {
-      currentCategoryIndex = Number(button.dataset.categoryIndex);
+      currentCategoryIndex = getNextCategoryIndex(currentCategoryIndex, Number(button.dataset.categoryIndex));
       updateUrlState();
       renderCategoryList();
     });

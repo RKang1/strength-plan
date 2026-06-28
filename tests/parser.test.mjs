@@ -4,6 +4,7 @@ import {
   buildWorkoutUrl,
   formatSetsReps,
   getInitialWorkoutState,
+  getNextCategoryIndex,
   getUrlState,
   parseWorkoutMarkdown,
   renderCategoryListHtml,
@@ -112,7 +113,7 @@ test('slugifyCategory creates stable URL-friendly category ids', () => {
   assert.equal(slugifyCategory('  Hip Mobility  '), 'hip-mobility');
 });
 
-test('resolveCategoryIndex finds categories by slug and falls back to first category', () => {
+test('resolveCategoryIndex finds categories by slug and leaves no category selected by default', () => {
   const categories = [
     { name: 'Warm Up' },
     { name: 'Power Development' },
@@ -121,8 +122,14 @@ test('resolveCategoryIndex finds categories by slug and falls back to first cate
 
   assert.equal(resolveCategoryIndex(categories, 'power-development'), 1);
   assert.equal(resolveCategoryIndex(categories, 'core-carries'), 2);
-  assert.equal(resolveCategoryIndex(categories, 'missing'), 0);
-  assert.equal(resolveCategoryIndex(categories, ''), 0);
+  assert.equal(resolveCategoryIndex(categories, 'missing'), -1);
+  assert.equal(resolveCategoryIndex(categories, ''), -1);
+});
+
+test('getNextCategoryIndex collapses the active category when selected again', () => {
+  assert.equal(getNextCategoryIndex(-1, 1), 1);
+  assert.equal(getNextCategoryIndex(1, 1), -1);
+  assert.equal(getNextCategoryIndex(1, 0), 0);
 });
 
 test('getUrlState reads day and category from URL-like objects', () => {
@@ -186,4 +193,27 @@ test('renderCategoryListHtml expands only the active category inline', () => {
   assert.doesNotMatch(html, /Back Squat/);
   assert.match(html, /Bench Press/);
   assert.match(html, /3-4 sets x 4-8 reps/);
+});
+
+test('renderCategoryListHtml leaves all categories collapsed without an active category', () => {
+  const html = renderCategoryListHtml(
+    [
+      {
+        name: 'Main Lower Strength',
+        setsReps: '3-5 x 3-6',
+        exercises: ['Back Squat', 'Trap Bar Deadlift'],
+      },
+      {
+        name: 'Main Upper Push',
+        setsReps: '3-4 x 4-8',
+        exercises: ['Bench Press', 'Push Press'],
+      },
+    ],
+    -1,
+  );
+
+  assert.doesNotMatch(html, /aria-expanded="true"/);
+  assert.match(html, /aria-expanded="false"/);
+  assert.doesNotMatch(html, /Back Squat/);
+  assert.doesNotMatch(html, /Bench Press/);
 });
