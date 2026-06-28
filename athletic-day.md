@@ -7,8 +7,6 @@ Sets x Reps: 3-5 x 3-5
 - Box Jump
 - Broad Jump
 - Vertical Jump
-- Tuck Jump
-- Single-leg Box Jump
 - Bounds
 - Skater Jumps
 - Split Jumps
@@ -49,8 +47,6 @@ Sets x Reps: 3-5 x 2-5
 - Speed Squat
 - Speed Bench
 - Speed Deadlift
-- Band Squat
-- Band Bench
 - Kettlebell Swing
 - Jump Squat
 - Med Ball Push Press
@@ -63,7 +59,6 @@ Sets x Reps: 2-4 x 5-8
 - Cable Rotation
 - Cable Punch
 - Wood Chop
-- Russian Twist (explosive)
 - Medicine Ball Rotational Slam
 
 ## Balance/Deceleration
@@ -74,7 +69,6 @@ Sets x Reps: 2-3 x 5-8
 - Lateral Bound & Stick
 - Single-leg Hop & Stick
 - Drop Lunge
-- BOSU Balance (advanced)
 - Y Balance Reach
 
 ## Prehab/Mobility
@@ -84,12 +78,10 @@ Sets x Reps: 2-3 x 10-20
 - Face Pull
 - Band Pull-apart
 - External Rotation
-- Cuban Press
 - Y-T-W Raises
 - Serratus Wall Slide
 - Scap Push-up
 - Copenhagen Plank
-- Copenhagen Raise
 - Lateral Band Walk
 - Monster Walk
 - Hip Airplane
