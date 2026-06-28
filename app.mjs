@@ -47,6 +47,18 @@ export function parseWorkoutMarkdown(markdown, id) {
   return workout;
 }
 
+export function formatSetsReps(value) {
+  const match = value.match(/^(\d+\s*[-–]\s*\d+|\d+)\s*x\s*(\d+\s*[-–]\s*\d+|\d+)$/i);
+
+  if (!match) {
+    return value;
+  }
+
+  const sets = match[1].replace(/\s*[-–]\s*/g, '-');
+  const reps = match[2].replace(/\s*[-–]\s*/g, '-');
+  return `${sets} sets x ${reps} reps`;
+}
+
 async function loadWorkout(workoutId) {
   const workoutMeta = workouts.find((workout) => workout.id === workoutId) || workouts[0];
   showLoading();
@@ -130,7 +142,7 @@ function renderCategoryList() {
       const isActive = index === currentCategoryIndex;
       return `<button class="category-button${isActive ? ' is-active' : ''}" type="button" data-category-index="${index}" aria-pressed="${isActive}">
         <span>${escapeHtml(category.name)}</span>
-        <small>${escapeHtml(category.setsReps || 'No sets listed')}</small>
+        <small>${escapeHtml(category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed')}</small>
       </button>`;
     })
     .join('');
@@ -165,7 +177,7 @@ function renderCategoryDetails() {
   container.innerHTML = `<section class="details-panel">
     <p class="eyebrow">${escapeHtml(currentWorkout.title)}</p>
     <h2>${escapeHtml(category.name)}</h2>
-    <p class="sets-reps">${escapeHtml(category.setsReps || 'No sets listed')}</p>
+    <p class="sets-reps">${escapeHtml(category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed')}</p>
     ${exercises}
   </section>`;
 }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseWorkoutMarkdown } from '../app.mjs';
+import { formatSetsReps, parseWorkoutMarkdown } from '../app.mjs';
 
 test('parseWorkoutMarkdown reads the title and categories', () => {
   const markdown = `# Strength Day
@@ -54,4 +54,8 @@ Sets x Reps: 5-10 min
       exercises: [],
     },
   ]);
+});
+
+test('formatSetsReps makes set and rep ranges explicit', () => {
+  assert.equal(formatSetsReps('3-5 x 3-6'), '3-5 sets x 3-6 reps');
 });
