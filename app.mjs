@@ -82,7 +82,63 @@ export function formatSetsReps(value) {
   return `${sets} sets x ${reps} reps`;
 }
 
-async function loadWorkout(workoutId) {
+export function slugifyCategory(value) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export function resolveCategoryIndex(categories, categorySlug) {
+  if (!categorySlug) {
+    return 0;
+  }
+
+  const index = categories.findIndex((category) => slugifyCategory(category.name) === categorySlug);
+  return index >= 0 ? index : 0;
+}
+
+export function getUrlState(windowLike = globalThis.window) {
+  if (!windowLike?.location) {
+    return {
+      day: '',
+      category: '',
+    };
+  }
+
+  const params = new URLSearchParams(windowLike.location.search);
+  return {
+    day: params.get('day') || '',
+    category: params.get('category') || '',
+  };
+}
+
+export function getInitialWorkoutState(search = globalThis.window?.location?.search || '') {
+  const params = new URLSearchParams(search);
+  const requestedDay = params.get('day') || '';
+  const day = workouts.some((workout) => workout.id === requestedDay) ? requestedDay : workouts[0].id;
+
+  return {
+    day,
+    category: params.get('category') || '',
+  };
+}
+
+export function buildWorkoutUrl(currentUrl, day, categorySlug) {
+  const url = new URL(currentUrl);
+  url.searchParams.set('day', day);
+
+  if (categorySlug) {
+    url.searchParams.set('category', categorySlug);
+  } else {
+    url.searchParams.delete('category');
+  }
+
+  return url.toString();
+}
+
+async function loadWorkout(workoutId, requestedCategorySlug = '') {
   const workoutMeta = workouts.find((workout) => workout.id === workoutId) || workouts[0];
   showLoading();
 
@@ -95,7 +151,8 @@ async function loadWorkout(workoutId) {
 
     const markdown = await response.text();
     currentWorkout = parseWorkoutMarkdown(markdown, workoutMeta.id);
-    currentCategoryIndex = 0;
+    currentCategoryIndex = resolveCategoryIndex(currentWorkout.categories, requestedCategorySlug);
+    updateUrlState();
     render();
   } catch (error) {
     showError(error.message);
@@ -132,6 +189,17 @@ function render() {
   renderDaySelector();
   renderCategoryList();
   renderCategoryDetails();
+}
+
+function updateUrlState() {
+  if (!globalThis.window?.history || !currentWorkout) {
+    return;
+  }
+
+  const category = currentWorkout.categories[currentCategoryIndex];
+  const categorySlug = category ? slugifyCategory(category.name) : '';
+  const nextUrl = buildWorkoutUrl(globalThis.window.location.href, currentWorkout.id, categorySlug);
+  globalThis.window.history.replaceState({}, '', nextUrl);
 }
 
 function renderDaySelector() {
@@ -173,6 +241,7 @@ function renderCategoryList() {
   container.querySelectorAll('[data-category-index]').forEach((button) => {
     button.addEventListener('click', () => {
       currentCategoryIndex = Number(button.dataset.categoryIndex);
+      updateUrlState();
       renderCategoryList();
       renderCategoryDetails();
     });
@@ -236,5 +305,6 @@ function escapeHtml(value) {
 }
 
 if (typeof document !== 'undefined') {
-  loadWorkout('strength');
+  const initialState = getInitialWorkoutState();
+  loadWorkout(initialState.day, initialState.category);
 }
