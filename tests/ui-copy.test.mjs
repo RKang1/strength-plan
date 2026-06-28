@@ -7,3 +7,9 @@ test('index page does not show the old category-picking heading', async () => {
 
   assert.doesNotMatch(html, /Choose a day, then pick a category\./);
 });
+
+test('index page does not show the top-left workout plan label', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+
+  assert.doesNotMatch(html, /<p class="eyebrow">Workout Plan<\/p>/);
+});
