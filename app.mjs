@@ -5,6 +5,9 @@ const workouts = [
 
 let currentWorkout = null;
 let currentCategoryIndex = -1;
+let activeExercise = '';
+let activeExerciseTrigger = null;
+let activeModalKeydownHandler = null;
 
 export function parseWorkoutMarkdown(markdown, id) {
   const lines = markdown.split(/\r?\n/);
@@ -235,6 +238,12 @@ function renderCategoryList() {
       renderCategoryList();
     });
   });
+
+  container.querySelectorAll('[data-exercise]').forEach((button) => {
+    button.addEventListener('click', () => {
+      showExerciseModal(button.dataset.exercise, button);
+    });
+  });
 }
 
 export function renderCategoryListHtml(categories, activeIndex) {
@@ -298,6 +307,82 @@ function escapeHtml(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
+}
+
+function showExerciseModal(exercise, triggerElement) {
+  activeExercise = exercise;
+  activeExerciseTrigger = triggerElement;
+  renderExerciseModal();
+}
+
+function closeExerciseModal({ restoreFocus = true } = {}) {
+  const modal = document.querySelector('[data-exercise-modal]');
+
+  if (modal) {
+    modal.remove();
+  }
+
+  if (activeModalKeydownHandler) {
+    document.removeEventListener('keydown', activeModalKeydownHandler);
+    activeModalKeydownHandler = null;
+  }
+
+  activeExercise = '';
+
+  if (restoreFocus && activeExerciseTrigger?.focus) {
+    activeExerciseTrigger.focus();
+  }
+
+  activeExerciseTrigger = null;
+}
+
+function openExerciseOnYoutube() {
+  if (!activeExercise) {
+    return;
+  }
+
+  const url = buildYoutubeSearchUrl(activeExercise);
+  globalThis.window?.open?.(url, '_blank', 'noopener');
+  closeExerciseModal({ restoreFocus: false });
+}
+
+function renderExerciseModal() {
+  document.querySelector('[data-exercise-modal]')?.remove();
+
+  if (activeModalKeydownHandler) {
+    document.removeEventListener('keydown', activeModalKeydownHandler);
+    activeModalKeydownHandler = null;
+  }
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'modal-backdrop';
+  wrapper.dataset.exerciseModal = '';
+  wrapper.innerHTML = `<div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="exercise-modal-title">
+    <h2 id="exercise-modal-title">View &quot;${escapeHtml(activeExercise)}&quot; on YouTube?</h2>
+    <div class="modal-actions">
+      <button class="modal-button" type="button" data-modal-cancel>Cancel</button>
+      <button class="modal-button is-primary" type="button" data-modal-confirm>YouTube</button>
+    </div>
+  </div>`;
+
+  wrapper.addEventListener('click', (event) => {
+    if (event.target === wrapper) {
+      closeExerciseModal();
+    }
+  });
+
+  wrapper.querySelector('[data-modal-cancel]').addEventListener('click', () => closeExerciseModal());
+  wrapper.querySelector('[data-modal-confirm]').addEventListener('click', openExerciseOnYoutube);
+
+  activeModalKeydownHandler = (event) => {
+    if (event.key === 'Escape') {
+      closeExerciseModal();
+    }
+  };
+
+  document.addEventListener('keydown', activeModalKeydownHandler);
+  document.body.append(wrapper);
+  wrapper.querySelector('[data-modal-confirm]').focus();
 }
 
 if (typeof document !== 'undefined') {
