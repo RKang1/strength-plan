@@ -16,6 +16,7 @@ export function parseWorkoutMarkdown(markdown, id) {
   };
 
   let currentCategory = null;
+  let currentExerciseGroup = null;
 
   for (const line of lines) {
     const trimmed = line.trim();
@@ -26,11 +27,26 @@ export function parseWorkoutMarkdown(markdown, id) {
         setsReps: '',
         exercises: [],
       };
+      currentExerciseGroup = null;
       workout.categories.push(currentCategory);
       continue;
     }
 
     if (!currentCategory) {
+      continue;
+    }
+
+    if (trimmed.startsWith('### ')) {
+      currentExerciseGroup = {
+        name: trimmed.replace(/^###\s+/, '').trim(),
+        exercises: [],
+      };
+
+      if (!currentCategory.exerciseGroups) {
+        currentCategory.exerciseGroups = [];
+      }
+
+      currentCategory.exerciseGroups.push(currentExerciseGroup);
       continue;
     }
 
@@ -40,7 +56,14 @@ export function parseWorkoutMarkdown(markdown, id) {
     }
 
     if (trimmed.startsWith('- ')) {
-      currentCategory.exercises.push(trimmed.replace(/^-\s+/, '').trim());
+      const exercise = trimmed.replace(/^-\s+/, '').trim();
+
+      if (currentExerciseGroup) {
+        currentExerciseGroup.exercises.push(exercise);
+        continue;
+      }
+
+      currentCategory.exercises.push(exercise);
     }
   }
 
@@ -170,9 +193,7 @@ function renderCategoryDetails() {
     return;
   }
 
-  const exercises = category.exercises.length
-    ? `<ul class="exercise-list">${category.exercises.map((exercise) => `<li>${escapeHtml(exercise)}</li>`).join('')}</ul>`
-    : '<p class="muted">No exercises listed for this category.</p>';
+  const exercises = renderExercises(category);
 
   container.innerHTML = `<section class="details-panel">
     <p class="eyebrow">${escapeHtml(currentWorkout.title)}</p>
@@ -180,6 +201,29 @@ function renderCategoryDetails() {
     <p class="sets-reps">${escapeHtml(category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed')}</p>
     ${exercises}
   </section>`;
+}
+
+function renderExercises(category) {
+  if (category.exerciseGroups?.length) {
+    return `<div class="exercise-groups">${category.exerciseGroups.map(renderExerciseGroup).join('')}</div>`;
+  }
+
+  if (category.exercises.length) {
+    return renderExerciseList(category.exercises);
+  }
+
+  return '<p class="muted">No exercises listed for this category.</p>';
+}
+
+function renderExerciseGroup(group) {
+  return `<section class="exercise-group">
+    <h3>${escapeHtml(group.name)}</h3>
+    ${renderExerciseList(group.exercises)}
+  </section>`;
+}
+
+function renderExerciseList(exercises) {
+  return `<ul class="exercise-list">${exercises.map((exercise) => `<li>${escapeHtml(exercise)}</li>`).join('')}</ul>`;
 }
 
 function escapeHtml(value) {

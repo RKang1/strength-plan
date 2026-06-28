@@ -56,6 +56,43 @@ Sets x Reps: 5-10 min
   ]);
 });
 
+test('parseWorkoutMarkdown preserves grouped exercises within a category', () => {
+  const markdown = `# Athletic Day
+
+## Prehab/Mobility
+
+Sets x Reps: 2-3 x 10-20
+
+### Shoulder Health
+
+- Face Pull
+- Band Pull-apart
+
+### Hip / Groin
+
+- Copenhagen Plank
+- Cossack Squat
+`;
+
+  const workout = parseWorkoutMarkdown(markdown, 'athletic');
+
+  assert.deepEqual(workout.categories[0], {
+    name: 'Prehab/Mobility',
+    setsReps: '2-3 x 10-20',
+    exercises: [],
+    exerciseGroups: [
+      {
+        name: 'Shoulder Health',
+        exercises: ['Face Pull', 'Band Pull-apart'],
+      },
+      {
+        name: 'Hip / Groin',
+        exercises: ['Copenhagen Plank', 'Cossack Squat'],
+      },
+    ],
+  });
+});
+
 test('formatSetsReps makes set and rep ranges explicit', () => {
   assert.equal(formatSetsReps('3-5 x 3-6'), '3-5 sets x 3-6 reps');
 });

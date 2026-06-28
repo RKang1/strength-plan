@@ -75,18 +75,26 @@ Sets x Reps: 2-3 x 5-8
 
 Sets x Reps: 2-3 x 10-20
 
+### Shoulder Health
+
 - Face Pull
 - Band Pull-apart
 - External Rotation
 - Y-T-W Raises
 - Serratus Wall Slide
 - Scap Push-up
+
+### Hip / Groin
+
 - Copenhagen Plank
 - Lateral Band Walk
 - Monster Walk
 - Hip Airplane
 - Adductor Rockback
 - Cossack Squat
+
+### Neck
+
 - Neck Flexion
 - Neck Extension
 - Lateral Neck Raises
