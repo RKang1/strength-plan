@@ -2,12 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   buildWorkoutUrl,
+  buildYoutubeSearchUrl,
   formatSetsReps,
   getInitialWorkoutState,
   getNextCategoryIndex,
   getUrlState,
   parseWorkoutMarkdown,
   renderCategoryListHtml,
+  renderExerciseList,
   resolveCategoryIndex,
   slugifyCategory,
 } from '../app.mjs';
@@ -168,6 +170,35 @@ test('buildWorkoutUrl writes day and category query params', () => {
   assert.equal(
     buildWorkoutUrl('http://localhost:8000/?day=strength&category=warm-up', 'athletic', 'power-development'),
     'http://localhost:8000/?day=athletic&category=power-development',
+  );
+});
+
+test('buildYoutubeSearchUrl creates an encoded YouTube search URL', () => {
+  assert.equal(
+    buildYoutubeSearchUrl('Trap Bar Deadlift'),
+    'https://www.youtube.com/results?search_query=Trap+Bar+Deadlift',
+  );
+
+  assert.equal(
+    buildYoutubeSearchUrl('Hip / Groin Mobility'),
+    'https://www.youtube.com/results?search_query=Hip+%2F+Groin+Mobility',
+  );
+});
+
+test('renderExerciseList renders exercise tiles as interactive buttons', () => {
+  const html = renderExerciseList(['Back Squat', 'Bench Press']);
+
+  assert.match(html, /<ul class="exercise-list">/);
+  assert.match(html, /<button class="exercise-tile" type="button" data-exercise="Back Squat">Back Squat<\/button>/);
+  assert.match(html, /<button class="exercise-tile" type="button" data-exercise="Bench Press">Bench Press<\/button>/);
+});
+
+test('renderExerciseList escapes exercise text and data attributes', () => {
+  const html = renderExerciseList(['Push <Press> & "Catch"']);
+
+  assert.match(
+    html,
+    /data-exercise="Push &lt;Press&gt; &amp; &quot;Catch&quot;">Push &lt;Press&gt; &amp; &quot;Catch&quot;<\/button>/,
   );
 });
 

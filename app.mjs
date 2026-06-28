@@ -142,6 +142,11 @@ export function buildWorkoutUrl(currentUrl, day, categorySlug) {
   return url.toString();
 }
 
+export function buildYoutubeSearchUrl(exercise) {
+  const params = new URLSearchParams({ search_query: exercise });
+  return `https://www.youtube.com/results?${params.toString()}`;
+}
+
 async function loadWorkout(workoutId, requestedCategorySlug = '') {
   const workoutMeta = workouts.find((workout) => workout.id === workoutId) || workouts[0];
   showLoading();
@@ -277,8 +282,13 @@ function renderExerciseGroup(group) {
   </section>`;
 }
 
-function renderExerciseList(exercises) {
-  return `<ul class="exercise-list">${exercises.map((exercise) => `<li>${escapeHtml(exercise)}</li>`).join('')}</ul>`;
+export function renderExerciseList(exercises) {
+  return `<ul class="exercise-list">${exercises
+    .map((exercise) => {
+      const escapedExercise = escapeHtml(exercise);
+      return `<li><button class="exercise-tile" type="button" data-exercise="${escapedExercise}">${escapedExercise}</button></li>`;
+    })
+    .join('')}</ul>`;
 }
 
 function escapeHtml(value) {
