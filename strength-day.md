@@ -9,7 +9,6 @@ Sets x Reps: 3-5 x 3-6
 - Safety Bar Squat
 - Trap Bar Deadlift
 - Conventional Deadlift
-- Romanian Deadlift
 - Zercher Squat
 - Box Squat
 
@@ -77,7 +76,6 @@ Sets x Reps: 2-4 x 8-15
 - Hollow Hold
 - Body Saw
 - Suitcase Carry
-- Offset Carry
 - Side Plank
 
 ## Loaded Carry
