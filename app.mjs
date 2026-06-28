@@ -377,6 +377,34 @@ function renderExerciseModal() {
   activeModalKeydownHandler = (event) => {
     if (event.key === 'Escape') {
       closeExerciseModal();
+      return;
+    }
+
+    if (event.key !== 'Tab') {
+      return;
+    }
+
+    const focusableElements = Array.from(
+      wrapper.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'),
+    ).filter((element) => !element.disabled && element.getAttribute('aria-hidden') !== 'true');
+
+    if (!focusableElements.length) {
+      event.preventDefault();
+      return;
+    }
+
+    const firstFocusableElement = focusableElements[0];
+    const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstFocusableElement) {
+      event.preventDefault();
+      lastFocusableElement.focus();
+      return;
+    }
+
+    if (!event.shiftKey && document.activeElement === lastFocusableElement) {
+      event.preventDefault();
+      firstFocusableElement.focus();
     }
   };
 
