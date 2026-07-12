@@ -292,6 +292,32 @@ export function renderCategoryListHtml(categories, activeIndex) {
     .join('');
 }
 
+export function renderPhaseListHtml(phases, activePhaseIndex, activeCategoryIndex) {
+  if (!phases.length) {
+    return '<div class="empty-state"><h2>No phases found</h2><p>Add phases to the selected Markdown file.</p></div>';
+  }
+
+  return phases
+    .map((phase, index) => {
+      const isActive = index === activePhaseIndex;
+      const panelId = `phase-panel-${index}`;
+      const buttonId = `phase-button-${index}`;
+      const count = phase.categories.length;
+      const countLabel = `${count} ${count === 1 ? 'category' : 'categories'}`;
+
+      return `<section class="phase-item${isActive ? ' is-active' : ''}">
+        <button class="phase-button" id="${buttonId}" type="button" data-phase-index="${index}" aria-expanded="${isActive}" aria-controls="${panelId}">
+          <span>${escapeHtml(phase.name)}</span>
+          <small>${escapeHtml(countLabel)}</small>
+        </button>
+        ${isActive ? `<div class="phase-panel" id="${panelId}" role="region" aria-labelledby="${buttonId}">
+          ${renderCategoryListHtml(phase.categories, activeCategoryIndex)}
+        </div>` : ''}
+      </section>`;
+    })
+    .join('');
+}
+
 function renderExercises(category) {
   if (category.exerciseGroups?.length) {
     return `<div class="exercise-groups">${category.exerciseGroups.map(renderExerciseGroup).join('')}</div>`;

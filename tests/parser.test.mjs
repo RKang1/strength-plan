@@ -10,6 +10,7 @@ import {
   parseWorkoutMarkdown,
   renderCategoryListHtml,
   renderExerciseList,
+  renderPhaseListHtml,
   resolveCategoryIndex,
   slugifyCategory,
 } from '../app.mjs';
@@ -261,4 +262,46 @@ test('renderCategoryListHtml leaves all categories collapsed without an active c
   assert.match(html, /aria-expanded="false"/);
   assert.doesNotMatch(html, /Back Squat/);
   assert.doesNotMatch(html, /Bench Press/);
+});
+
+test('renderPhaseListHtml expands only the active phase and its active category', () => {
+  const phases = [
+    {
+      name: 'Athletic',
+      categories: [
+        { name: 'Jump / Landing', setsReps: '3-5 x 3-5', exercises: ['Box Jump'] },
+      ],
+    },
+    {
+      name: 'Strength',
+      categories: [
+        { name: 'Upper Pull', setsReps: '3-4 x 4-8', exercises: ['Pull-ups'] },
+        { name: 'Loaded Carry', setsReps: '2-4 trips', exercises: ['Farmer Carry'] },
+      ],
+    },
+  ];
+
+  const html = renderPhaseListHtml(phases, 1, 0);
+
+  assert.match(html, /data-phase-index="0"[^>]*aria-expanded="false"/);
+  assert.match(html, /data-phase-index="1"[^>]*aria-expanded="true"/);
+  assert.doesNotMatch(html, /Jump \/ Landing/);
+  assert.match(html, /Pull-ups/);
+  assert.doesNotMatch(html, /Farmer Carry/);
+});
+
+test('renderPhaseListHtml keeps every phase collapsed without an active phase', () => {
+  const phases = [
+    {
+      name: 'Athletic',
+      categories: [
+        { name: 'Jump / Landing', setsReps: '3-5 x 3-5', exercises: ['Box Jump'] },
+      ],
+    },
+  ];
+
+  const html = renderPhaseListHtml(phases, -1, -1);
+
+  assert.doesNotMatch(html, /aria-expanded="true"/);
+  assert.doesNotMatch(html, /Box Jump/);
 });
