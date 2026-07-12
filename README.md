@@ -6,10 +6,12 @@ A simple static workout browser for GitHub Pages.
 
 Workout data lives in Markdown:
 
-- `strength-day.md`
-- `athletic-day.md`
+- `day-1.md`
+- `day-2.md`
 
-Each `##` heading is a category. Add a `Sets x Reps:` line and bullet exercises under it.
+Each `##` heading is a phase (Athletic / Strength / Cool-Down). Under a phase,
+each `###` heading is a category — add a `Sets x Reps:` line and bullet exercises
+beneath it. An optional `####` heading groups exercises within a category.
 
 ## Run Locally
 
@@ -22,5 +24,5 @@ Open `http://localhost:8000/`.
 ## Test
 
 ```bash
-node --test tests/parser.test.mjs
+node --test
 ```
