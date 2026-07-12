@@ -12,6 +12,7 @@ import {
   renderExerciseList,
   renderPhaseListHtml,
   resolveCategoryIndex,
+  resolvePhaseIndex,
   slugifyCategory,
 } from '../app.mjs';
 
@@ -149,43 +150,51 @@ test('getNextCategoryIndex collapses the active category when selected again', (
   assert.equal(getNextCategoryIndex(1, 0), 0);
 });
 
-test('getUrlState reads day and category from URL-like objects', () => {
+test('getUrlState reads day, phase, and category from URL-like objects', () => {
   const state = getUrlState({
-    location: {
-      search: '?day=athletic&category=power-development',
-    },
+    location: { search: '?day=day2&phase=strength&category=upper-pull' },
   });
 
-  assert.deepEqual(state, {
-    day: 'athletic',
-    category: 'power-development',
-  });
+  assert.deepEqual(state, { day: 'day2', phase: 'strength', category: 'upper-pull' });
 });
 
 test('getUrlState returns empty values outside browser-like environments', () => {
-  assert.deepEqual(getUrlState(undefined), {
-    day: '',
-    category: '',
-  });
+  assert.deepEqual(getUrlState(undefined), { day: '', phase: '', category: '' });
 });
 
-test('getInitialWorkoutState validates day while preserving requested category', () => {
-  assert.deepEqual(getInitialWorkoutState('?day=athletic&category=power-development'), {
-    day: 'athletic',
-    category: 'power-development',
-  });
-
-  assert.deepEqual(getInitialWorkoutState('?day=missing&category=power-development'), {
-    day: 'strength',
-    category: 'power-development',
-  });
-});
-
-test('buildWorkoutUrl writes day and category query params', () => {
-  assert.equal(
-    buildWorkoutUrl('http://localhost:8000/?day=strength&category=warm-up', 'athletic', 'power-development'),
-    'http://localhost:8000/?day=athletic&category=power-development',
+test('getInitialWorkoutState validates day while preserving phase and category', () => {
+  assert.deepEqual(
+    getInitialWorkoutState('?day=day2&phase=strength&category=upper-pull'),
+    { day: 'day2', phase: 'strength', category: 'upper-pull' },
   );
+
+  assert.deepEqual(
+    getInitialWorkoutState('?day=missing&phase=strength&category=upper-pull'),
+    { day: 'day1', phase: 'strength', category: 'upper-pull' },
+  );
+});
+
+test('buildWorkoutUrl writes day, phase, and category query params', () => {
+  assert.equal(
+    buildWorkoutUrl('http://localhost:8000/?day=day1&phase=athletic&category=jump-landing', 'day2', 'strength', 'upper-pull'),
+    'http://localhost:8000/?day=day2&phase=strength&category=upper-pull',
+  );
+});
+
+test('buildWorkoutUrl drops category when no phase is open', () => {
+  assert.equal(
+    buildWorkoutUrl('http://localhost:8000/?day=day1&phase=athletic&category=jump-landing', 'day1', '', 'upper-pull'),
+    'http://localhost:8000/?day=day1',
+  );
+});
+
+test('resolvePhaseIndex finds phases by slug and defaults to none selected', () => {
+  const phases = [{ name: 'Athletic' }, { name: 'Strength' }, { name: 'Cool-Down' }];
+
+  assert.equal(resolvePhaseIndex(phases, 'strength'), 1);
+  assert.equal(resolvePhaseIndex(phases, 'cool-down'), 2);
+  assert.equal(resolvePhaseIndex(phases, 'missing'), -1);
+  assert.equal(resolvePhaseIndex(phases, ''), -1);
 });
 
 test('buildYoutubeSearchUrl creates an encoded YouTube search URL', () => {

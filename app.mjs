@@ -1,6 +1,6 @@
 const workouts = [
-  { id: 'strength', label: 'Strength Day', file: 'strength-day.md' },
-  { id: 'athletic', label: 'Athletic Day', file: 'athletic-day.md' },
+  { id: 'day1', label: 'Day 1 · Power', file: 'day-1.md' },
+  { id: 'day2', label: 'Day 2 · Strength', file: 'day-2.md' },
 ];
 
 let currentWorkout = null;
@@ -122,6 +122,15 @@ export function resolveCategoryIndex(categories, categorySlug) {
   return index >= 0 ? index : -1;
 }
 
+export function resolvePhaseIndex(phases, phaseSlug) {
+  if (!phaseSlug) {
+    return -1;
+  }
+
+  const index = phases.findIndex((phase) => slugifyCategory(phase.name) === phaseSlug);
+  return index >= 0 ? index : -1;
+}
+
 export function getNextCategoryIndex(currentIndex, selectedIndex) {
   return currentIndex === selectedIndex ? -1 : selectedIndex;
 }
@@ -130,6 +139,7 @@ export function getUrlState(windowLike = globalThis.window) {
   if (!windowLike?.location) {
     return {
       day: '',
+      phase: '',
       category: '',
     };
   }
@@ -137,6 +147,7 @@ export function getUrlState(windowLike = globalThis.window) {
   const params = new URLSearchParams(windowLike.location.search);
   return {
     day: params.get('day') || '',
+    phase: params.get('phase') || '',
     category: params.get('category') || '',
   };
 }
@@ -148,15 +159,22 @@ export function getInitialWorkoutState(search = globalThis.window?.location?.sea
 
   return {
     day,
+    phase: params.get('phase') || '',
     category: params.get('category') || '',
   };
 }
 
-export function buildWorkoutUrl(currentUrl, day, categorySlug) {
+export function buildWorkoutUrl(currentUrl, day, phaseSlug, categorySlug) {
   const url = new URL(currentUrl);
   url.searchParams.set('day', day);
 
-  if (categorySlug) {
+  if (phaseSlug) {
+    url.searchParams.set('phase', phaseSlug);
+  } else {
+    url.searchParams.delete('phase');
+  }
+
+  if (phaseSlug && categorySlug) {
     url.searchParams.set('category', categorySlug);
   } else {
     url.searchParams.delete('category');
