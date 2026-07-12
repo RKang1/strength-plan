@@ -15,33 +15,23 @@ export function parseWorkoutMarkdown(markdown, id) {
   const workout = {
     id,
     title: titleLine ? titleLine.replace(/^#\s+/, '').trim() : 'Workout',
-    categories: [],
+    phases: [],
   };
 
+  let currentPhase = null;
   let currentCategory = null;
   let currentExerciseGroup = null;
 
   for (const line of lines) {
     const trimmed = line.trim();
 
-    if (trimmed.startsWith('## ')) {
-      currentCategory = {
-        name: trimmed.replace(/^##\s+/, '').trim(),
-        setsReps: '',
-        exercises: [],
-      };
-      currentExerciseGroup = null;
-      workout.categories.push(currentCategory);
-      continue;
-    }
+    if (trimmed.startsWith('#### ')) {
+      if (!currentCategory) {
+        continue;
+      }
 
-    if (!currentCategory) {
-      continue;
-    }
-
-    if (trimmed.startsWith('### ')) {
       currentExerciseGroup = {
-        name: trimmed.replace(/^###\s+/, '').trim(),
+        name: trimmed.replace(/^####\s+/, '').trim(),
         exercises: [],
       };
 
@@ -50,6 +40,36 @@ export function parseWorkoutMarkdown(markdown, id) {
       }
 
       currentCategory.exerciseGroups.push(currentExerciseGroup);
+      continue;
+    }
+
+    if (trimmed.startsWith('### ')) {
+      if (!currentPhase) {
+        continue;
+      }
+
+      currentCategory = {
+        name: trimmed.replace(/^###\s+/, '').trim(),
+        setsReps: '',
+        exercises: [],
+      };
+      currentExerciseGroup = null;
+      currentPhase.categories.push(currentCategory);
+      continue;
+    }
+
+    if (trimmed.startsWith('## ')) {
+      currentPhase = {
+        name: trimmed.replace(/^##\s+/, '').trim(),
+        categories: [],
+      };
+      currentCategory = null;
+      currentExerciseGroup = null;
+      workout.phases.push(currentPhase);
+      continue;
+    }
+
+    if (!currentCategory) {
       continue;
     }
 

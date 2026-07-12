@@ -14,52 +14,64 @@ import {
   slugifyCategory,
 } from '../app.mjs';
 
-test('parseWorkoutMarkdown reads the title and categories', () => {
-  const markdown = `# Strength Day
+test('parseWorkoutMarkdown reads the title and nests categories under phases', () => {
+  const markdown = `# Day 1 · Power
 
-## Main Lower Strength
+## Strength
+
+### Main Lower Strength
 
 Sets x Reps: 3-5 x 3-6
 
 - Back Squat
 - Front Squat
 
-## Loaded Carry
+### Loaded Carry
 
 Sets x Reps: 2-4 trips
 
 - Farmer Carry
-`;
 
-  const workout = parseWorkoutMarkdown(markdown, 'strength');
+## Cool-Down
 
-  assert.equal(workout.id, 'strength');
-  assert.equal(workout.title, 'Strength Day');
-  assert.equal(workout.categories.length, 2);
-  assert.deepEqual(workout.categories[0], {
-    name: 'Main Lower Strength',
-    setsReps: '3-5 x 3-6',
-    exercises: ['Back Squat', 'Front Squat'],
-  });
-  assert.deepEqual(workout.categories[1], {
-    name: 'Loaded Carry',
-    setsReps: '2-4 trips',
-    exercises: ['Farmer Carry'],
-  });
-});
-
-test('parseWorkoutMarkdown handles empty exercise lists', () => {
-  const markdown = `# Athletic Day
-
-## Optional Conditioning
+### Optional Conditioning
 
 Sets x Reps: 5-10 min
 `;
 
-  const workout = parseWorkoutMarkdown(markdown, 'athletic');
+  const workout = parseWorkoutMarkdown(markdown, 'day1');
 
-  assert.equal(workout.title, 'Athletic Day');
-  assert.deepEqual(workout.categories, [
+  assert.equal(workout.id, 'day1');
+  assert.equal(workout.title, 'Day 1 · Power');
+  assert.equal(workout.phases.length, 2);
+  assert.equal(workout.phases[0].name, 'Strength');
+  assert.deepEqual(workout.phases[0].categories[0], {
+    name: 'Main Lower Strength',
+    setsReps: '3-5 x 3-6',
+    exercises: ['Back Squat', 'Front Squat'],
+  });
+  assert.deepEqual(workout.phases[0].categories[1], {
+    name: 'Loaded Carry',
+    setsReps: '2-4 trips',
+    exercises: ['Farmer Carry'],
+  });
+  assert.equal(workout.phases[1].name, 'Cool-Down');
+});
+
+test('parseWorkoutMarkdown handles categories with empty exercise lists', () => {
+  const markdown = `# Day 1 · Power
+
+## Cool-Down
+
+### Optional Conditioning
+
+Sets x Reps: 5-10 min
+`;
+
+  const workout = parseWorkoutMarkdown(markdown, 'day1');
+
+  assert.equal(workout.phases.length, 1);
+  assert.deepEqual(workout.phases[0].categories, [
     {
       name: 'Optional Conditioning',
       setsReps: '5-10 min',
@@ -69,27 +81,29 @@ Sets x Reps: 5-10 min
 });
 
 test('parseWorkoutMarkdown preserves grouped exercises within a category', () => {
-  const markdown = `# Athletic Day
+  const markdown = `# Day 1 · Power
 
-## Prehab/Mobility
+## Cool-Down
+
+### Prehab / Mobility
 
 Sets x Reps: 2-3 x 10-20
 
-### Shoulder Health
+#### Shoulder Health
 
 - Face Pull
 - Band Pull-apart
 
-### Hip / Groin
+#### Hip / Groin
 
 - Copenhagen Plank
 - Cossack Squat
 `;
 
-  const workout = parseWorkoutMarkdown(markdown, 'athletic');
+  const workout = parseWorkoutMarkdown(markdown, 'day1');
 
-  assert.deepEqual(workout.categories[0], {
-    name: 'Prehab/Mobility',
+  assert.deepEqual(workout.phases[0].categories[0], {
+    name: 'Prehab / Mobility',
     setsReps: '2-3 x 10-20',
     exercises: [],
     exerciseGroups: [
