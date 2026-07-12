@@ -4,6 +4,7 @@ const workouts = [
 ];
 
 let currentWorkout = null;
+let currentPhaseIndex = -1;
 let currentCategoryIndex = -1;
 let activeExercise = '';
 let activeExerciseTrigger = null;
@@ -188,7 +189,7 @@ export function buildYoutubeSearchUrl(exercise) {
   return `https://www.youtube.com/results?${params.toString()}`;
 }
 
-async function loadWorkout(workoutId, requestedCategorySlug = '') {
+async function loadWorkout(workoutId, requestedPhaseSlug = '', requestedCategorySlug = '') {
   const workoutMeta = workouts.find((workout) => workout.id === workoutId) || workouts[0];
   showLoading();
 
@@ -201,7 +202,9 @@ async function loadWorkout(workoutId, requestedCategorySlug = '') {
 
     const markdown = await response.text();
     currentWorkout = parseWorkoutMarkdown(markdown, workoutMeta.id);
-    currentCategoryIndex = resolveCategoryIndex(currentWorkout.categories, requestedCategorySlug);
+    currentPhaseIndex = resolvePhaseIndex(currentWorkout.phases, requestedPhaseSlug);
+    const activePhase = currentWorkout.phases[currentPhaseIndex];
+    currentCategoryIndex = activePhase ? resolveCategoryIndex(activePhase.categories, requestedCategorySlug) : -1;
     updateUrlState();
     render();
   } catch (error) {
@@ -210,24 +213,24 @@ async function loadWorkout(workoutId, requestedCategorySlug = '') {
 }
 
 function showLoading() {
-  const categoryList = document.querySelector('[data-category-list]');
+  const phaseList = document.querySelector('[data-phase-list]');
 
-  if (categoryList) {
-    categoryList.innerHTML = '<p class="muted">Loading workout...</p>';
+  if (phaseList) {
+    phaseList.innerHTML = '<p class="muted">Loading workout...</p>';
   }
 }
 
 function showError(message) {
-  const categoryList = document.querySelector('[data-category-list]');
+  const phaseList = document.querySelector('[data-phase-list]');
 
-  if (categoryList) {
-    categoryList.innerHTML = `<div class="empty-state"><h2>Unable to load workout</h2><p>${escapeHtml(message)}</p></div>`;
+  if (phaseList) {
+    phaseList.innerHTML = `<div class="empty-state"><h2>Unable to load workout</h2><p>${escapeHtml(message)}</p></div>`;
   }
 }
 
 function render() {
   renderDaySelector();
-  renderCategoryList();
+  renderPhaseList();
 }
 
 function updateUrlState() {
@@ -235,9 +238,11 @@ function updateUrlState() {
     return;
   }
 
-  const category = currentWorkout.categories[currentCategoryIndex];
+  const phase = currentWorkout.phases[currentPhaseIndex];
+  const phaseSlug = phase ? slugifyCategory(phase.name) : '';
+  const category = phase ? phase.categories[currentCategoryIndex] : null;
   const categorySlug = category ? slugifyCategory(category.name) : '';
-  const nextUrl = buildWorkoutUrl(globalThis.window.location.href, currentWorkout.id, categorySlug);
+  const nextUrl = buildWorkoutUrl(globalThis.window.location.href, currentWorkout.id, phaseSlug, categorySlug);
   globalThis.window.history.replaceState({}, '', nextUrl);
 }
 
@@ -260,20 +265,29 @@ function renderDaySelector() {
   });
 }
 
-function renderCategoryList() {
-  const container = document.querySelector('[data-category-list]');
+function renderPhaseList() {
+  const container = document.querySelector('[data-phase-list]');
 
   if (!container || !currentWorkout) {
     return;
   }
 
-  container.innerHTML = renderCategoryListHtml(currentWorkout.categories, currentCategoryIndex);
+  container.innerHTML = renderPhaseListHtml(currentWorkout.phases, currentPhaseIndex, currentCategoryIndex);
+
+  container.querySelectorAll('[data-phase-index]').forEach((button) => {
+    button.addEventListener('click', () => {
+      currentPhaseIndex = getNextCategoryIndex(currentPhaseIndex, Number(button.dataset.phaseIndex));
+      currentCategoryIndex = -1;
+      updateUrlState();
+      renderPhaseList();
+    });
+  });
 
   container.querySelectorAll('[data-category-index]').forEach((button) => {
     button.addEventListener('click', () => {
       currentCategoryIndex = getNextCategoryIndex(currentCategoryIndex, Number(button.dataset.categoryIndex));
       updateUrlState();
-      renderCategoryList();
+      renderPhaseList();
     });
   });
 
@@ -479,5 +493,5 @@ function renderExerciseModal() {
 
 if (typeof document !== 'undefined') {
   const initialState = getInitialWorkoutState();
-  loadWorkout(initialState.day, initialState.category);
+  loadWorkout(initialState.day, initialState.phase, initialState.category);
 }
