@@ -1,6 +1,8 @@
-# Athletic Day
+# Day 1 · Power
 
-## Jump/Landing
+## Athletic
+
+### Jump / Landing
 
 Sets x Reps: 3-5 x 3-5
 
@@ -14,20 +16,7 @@ Sets x Reps: 3-5 x 3-5
 - Snap Down
 - Stick Landing
 
-## Medicine Ball Power
-
-Sets x Reps: 3-5 x 3-6
-
-- Rotational Throw
-- Side Toss
-- Step-behind Throw
-- Chest Pass
-- Shot Put Throw
-- Overhead Slam
-- Scoop Toss
-- Backward Throw
-
-## Olympic Lift / Explosive Lift
+### Olympic / Explosive
 
 Sets x Reps: 3-5 x 2-4
 
@@ -40,7 +29,20 @@ Sets x Reps: 3-5 x 2-4
 - Trap Bar Jump
 - Jump Shrug
 
-## Speed Strength
+### Medicine Ball Power
+
+Sets x Reps: 3-5 x 3-6
+
+- Rotational Throw
+- Side Toss
+- Step-behind Throw
+- Chest Pass
+- Shot Put Throw
+- Overhead Slam
+- Scoop Toss
+- Backward Throw
+
+### Speed Strength
 
 Sets x Reps: 3-5 x 2-5
 
@@ -51,7 +53,7 @@ Sets x Reps: 3-5 x 2-5
 - Jump Squat
 - Med Ball Push Press
 
-## Rotational/Core Power
+### Rotational Power
 
 Sets x Reps: 2-4 x 5-8
 
@@ -61,21 +63,53 @@ Sets x Reps: 2-4 x 5-8
 - Wood Chop
 - Medicine Ball Rotational Slam
 
-## Balance/Deceleration
+## Strength
 
-Sets x Reps: 2-3 x 5-8
+### Main Lower — Dynamic
 
-- Single-leg RDL
-- Lateral Bound & Stick
-- Single-leg Hop & Stick
-- Drop Lunge
-- Y Balance Reach
+Sets x Reps: 5-6 x 2-3
 
-## Prehab/Mobility
+- Back Squat
+- Front Squat
+- Safety Bar Squat
+- Trap Bar Deadlift
+- Conventional Deadlift
+- Zercher Squat
+- Box Squat
+
+### Upper Push
+
+Sets x Reps: 3-4 x 4-8
+
+- Bench Press
+- Incline Bench
+- Dumbbell Bench
+- Push Press
+- Standing Overhead Press
+- Landmine Press
+- Weighted Dips
+- Weighted Push-ups
+
+### Posterior Chain
+
+Sets x Reps: 2-4 x 5-10
+
+- Romanian Deadlift
+- Good Morning
+- Hip Thrust
+- Glute Bridge
+- Nordic Curl
+- Hamstring Curl
+- Reverse Hyper
+- Back Extension
+
+## Cool-Down
+
+### Prehab / Mobility
 
 Sets x Reps: 2-3 x 10-20
 
-### Shoulder Health
+#### Shoulder Health
 
 - Face Pull
 - Band Pull-apart
@@ -84,7 +118,7 @@ Sets x Reps: 2-3 x 10-20
 - Serratus Wall Slide
 - Scap Push-up
 
-### Hip / Groin
+#### Hip / Groin
 
 - Copenhagen Plank
 - Lateral Band Walk
@@ -93,7 +127,7 @@ Sets x Reps: 2-3 x 10-20
 - Adductor Rockback
 - Cossack Squat
 
-### Neck
+#### Neck
 
 - Neck Flexion
 - Neck Extension
@@ -102,7 +136,7 @@ Sets x Reps: 2-3 x 10-20
 - Band-resisted Neck Work
 - Isometric Neck Holds
 
-## Optional Conditioning
+### Optional Conditioning
 
 Sets x Reps: 5-10 min
 

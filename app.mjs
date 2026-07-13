@@ -1,9 +1,10 @@
 const workouts = [
-  { id: 'strength', label: 'Strength Day', file: 'strength-day.md' },
-  { id: 'athletic', label: 'Athletic Day', file: 'athletic-day.md' },
+  { id: 'day1', label: 'Day 1 · Power', file: 'day-1.md' },
+  { id: 'day2', label: 'Day 2 · Strength', file: 'day-2.md' },
 ];
 
 let currentWorkout = null;
+let currentPhaseIndex = -1;
 let currentCategoryIndex = -1;
 let activeExercise = '';
 let activeExerciseTrigger = null;
@@ -15,33 +16,23 @@ export function parseWorkoutMarkdown(markdown, id) {
   const workout = {
     id,
     title: titleLine ? titleLine.replace(/^#\s+/, '').trim() : 'Workout',
-    categories: [],
+    phases: [],
   };
 
+  let currentPhase = null;
   let currentCategory = null;
   let currentExerciseGroup = null;
 
   for (const line of lines) {
     const trimmed = line.trim();
 
-    if (trimmed.startsWith('## ')) {
-      currentCategory = {
-        name: trimmed.replace(/^##\s+/, '').trim(),
-        setsReps: '',
-        exercises: [],
-      };
-      currentExerciseGroup = null;
-      workout.categories.push(currentCategory);
-      continue;
-    }
+    if (trimmed.startsWith('#### ')) {
+      if (!currentCategory) {
+        continue;
+      }
 
-    if (!currentCategory) {
-      continue;
-    }
-
-    if (trimmed.startsWith('### ')) {
       currentExerciseGroup = {
-        name: trimmed.replace(/^###\s+/, '').trim(),
+        name: trimmed.replace(/^####\s+/, '').trim(),
         exercises: [],
       };
 
@@ -50,6 +41,36 @@ export function parseWorkoutMarkdown(markdown, id) {
       }
 
       currentCategory.exerciseGroups.push(currentExerciseGroup);
+      continue;
+    }
+
+    if (trimmed.startsWith('### ')) {
+      if (!currentPhase) {
+        continue;
+      }
+
+      currentCategory = {
+        name: trimmed.replace(/^###\s+/, '').trim(),
+        setsReps: '',
+        exercises: [],
+      };
+      currentExerciseGroup = null;
+      currentPhase.categories.push(currentCategory);
+      continue;
+    }
+
+    if (trimmed.startsWith('## ')) {
+      currentPhase = {
+        name: trimmed.replace(/^##\s+/, '').trim(),
+        categories: [],
+      };
+      currentCategory = null;
+      currentExerciseGroup = null;
+      workout.phases.push(currentPhase);
+      continue;
+    }
+
+    if (!currentCategory) {
       continue;
     }
 
@@ -102,6 +123,15 @@ export function resolveCategoryIndex(categories, categorySlug) {
   return index >= 0 ? index : -1;
 }
 
+export function resolvePhaseIndex(phases, phaseSlug) {
+  if (!phaseSlug) {
+    return -1;
+  }
+
+  const index = phases.findIndex((phase) => slugifyCategory(phase.name) === phaseSlug);
+  return index >= 0 ? index : -1;
+}
+
 export function getNextCategoryIndex(currentIndex, selectedIndex) {
   return currentIndex === selectedIndex ? -1 : selectedIndex;
 }
@@ -110,6 +140,7 @@ export function getUrlState(windowLike = globalThis.window) {
   if (!windowLike?.location) {
     return {
       day: '',
+      phase: '',
       category: '',
     };
   }
@@ -117,6 +148,7 @@ export function getUrlState(windowLike = globalThis.window) {
   const params = new URLSearchParams(windowLike.location.search);
   return {
     day: params.get('day') || '',
+    phase: params.get('phase') || '',
     category: params.get('category') || '',
   };
 }
@@ -128,15 +160,22 @@ export function getInitialWorkoutState(search = globalThis.window?.location?.sea
 
   return {
     day,
+    phase: params.get('phase') || '',
     category: params.get('category') || '',
   };
 }
 
-export function buildWorkoutUrl(currentUrl, day, categorySlug) {
+export function buildWorkoutUrl(currentUrl, day, phaseSlug, categorySlug) {
   const url = new URL(currentUrl);
   url.searchParams.set('day', day);
 
-  if (categorySlug) {
+  if (phaseSlug) {
+    url.searchParams.set('phase', phaseSlug);
+  } else {
+    url.searchParams.delete('phase');
+  }
+
+  if (phaseSlug && categorySlug) {
     url.searchParams.set('category', categorySlug);
   } else {
     url.searchParams.delete('category');
@@ -150,7 +189,7 @@ export function buildYoutubeSearchUrl(exercise) {
   return `https://www.youtube.com/results?${params.toString()}`;
 }
 
-async function loadWorkout(workoutId, requestedCategorySlug = '') {
+async function loadWorkout(workoutId, requestedPhaseSlug = '', requestedCategorySlug = '') {
   const workoutMeta = workouts.find((workout) => workout.id === workoutId) || workouts[0];
   showLoading();
 
@@ -163,7 +202,9 @@ async function loadWorkout(workoutId, requestedCategorySlug = '') {
 
     const markdown = await response.text();
     currentWorkout = parseWorkoutMarkdown(markdown, workoutMeta.id);
-    currentCategoryIndex = resolveCategoryIndex(currentWorkout.categories, requestedCategorySlug);
+    currentPhaseIndex = resolvePhaseIndex(currentWorkout.phases, requestedPhaseSlug);
+    const activePhase = currentWorkout.phases[currentPhaseIndex];
+    currentCategoryIndex = activePhase ? resolveCategoryIndex(activePhase.categories, requestedCategorySlug) : -1;
     updateUrlState();
     render();
   } catch (error) {
@@ -172,24 +213,24 @@ async function loadWorkout(workoutId, requestedCategorySlug = '') {
 }
 
 function showLoading() {
-  const categoryList = document.querySelector('[data-category-list]');
+  const phaseList = document.querySelector('[data-phase-list]');
 
-  if (categoryList) {
-    categoryList.innerHTML = '<p class="muted">Loading workout...</p>';
+  if (phaseList) {
+    phaseList.innerHTML = '<p class="muted">Loading workout...</p>';
   }
 }
 
 function showError(message) {
-  const categoryList = document.querySelector('[data-category-list]');
+  const phaseList = document.querySelector('[data-phase-list]');
 
-  if (categoryList) {
-    categoryList.innerHTML = `<div class="empty-state"><h2>Unable to load workout</h2><p>${escapeHtml(message)}</p></div>`;
+  if (phaseList) {
+    phaseList.innerHTML = `<div class="empty-state"><h2>Unable to load workout</h2><p>${escapeHtml(message)}</p></div>`;
   }
 }
 
 function render() {
   renderDaySelector();
-  renderCategoryList();
+  renderPhaseList();
 }
 
 function updateUrlState() {
@@ -197,9 +238,11 @@ function updateUrlState() {
     return;
   }
 
-  const category = currentWorkout.categories[currentCategoryIndex];
+  const phase = currentWorkout.phases[currentPhaseIndex];
+  const phaseSlug = phase ? slugifyCategory(phase.name) : '';
+  const category = phase ? phase.categories[currentCategoryIndex] : null;
   const categorySlug = category ? slugifyCategory(category.name) : '';
-  const nextUrl = buildWorkoutUrl(globalThis.window.location.href, currentWorkout.id, categorySlug);
+  const nextUrl = buildWorkoutUrl(globalThis.window.location.href, currentWorkout.id, phaseSlug, categorySlug);
   globalThis.window.history.replaceState({}, '', nextUrl);
 }
 
@@ -222,20 +265,35 @@ function renderDaySelector() {
   });
 }
 
-function renderCategoryList() {
-  const container = document.querySelector('[data-category-list]');
+function renderPhaseList() {
+  const container = document.querySelector('[data-phase-list]');
 
   if (!container || !currentWorkout) {
     return;
   }
 
-  container.innerHTML = renderCategoryListHtml(currentWorkout.categories, currentCategoryIndex);
+  container.innerHTML = renderPhaseListHtml(currentWorkout.phases, currentPhaseIndex, currentCategoryIndex);
+
+  container.querySelectorAll('[data-phase-index]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const phaseIndex = Number(button.dataset.phaseIndex);
+      currentPhaseIndex = getNextCategoryIndex(currentPhaseIndex, phaseIndex);
+      currentCategoryIndex = -1;
+      updateUrlState();
+      renderPhaseList();
+      // The click target was replaced by the re-render; keep keyboard focus on it.
+      container.querySelector(`[data-phase-index="${phaseIndex}"]`)?.focus();
+    });
+  });
 
   container.querySelectorAll('[data-category-index]').forEach((button) => {
     button.addEventListener('click', () => {
-      currentCategoryIndex = getNextCategoryIndex(currentCategoryIndex, Number(button.dataset.categoryIndex));
+      const categoryIndex = Number(button.dataset.categoryIndex);
+      currentCategoryIndex = getNextCategoryIndex(currentCategoryIndex, categoryIndex);
       updateUrlState();
-      renderCategoryList();
+      renderPhaseList();
+      // The click target was replaced by the re-render; keep keyboard focus on it.
+      container.querySelector(`[data-category-index="${categoryIndex}"]`)?.focus();
     });
   });
 
@@ -259,13 +317,39 @@ export function renderCategoryListHtml(categories, activeIndex) {
       const setsReps = category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed';
 
       return `<section class="category-item${isActive ? ' is-active' : ''}">
-        <button class="category-button" id="${buttonId}" type="button" data-category-index="${index}" aria-expanded="${isActive}" aria-controls="${panelId}">
+        <button class="category-button" id="${buttonId}" type="button" data-category-index="${index}" aria-expanded="${isActive}"${isActive ? ` aria-controls="${panelId}"` : ''}>
           <span>${escapeHtml(category.name)}</span>
           <small>${escapeHtml(setsReps)}</small>
         </button>
         ${isActive ? `<div class="category-panel" id="${panelId}" role="region" aria-labelledby="${buttonId}">
           <p class="sets-reps">${escapeHtml(setsReps)}</p>
           ${renderExercises(category)}
+        </div>` : ''}
+      </section>`;
+    })
+    .join('');
+}
+
+export function renderPhaseListHtml(phases, activePhaseIndex, activeCategoryIndex) {
+  if (!phases.length) {
+    return '<div class="empty-state"><h2>No phases found</h2><p>Add phases to the selected Markdown file.</p></div>';
+  }
+
+  return phases
+    .map((phase, index) => {
+      const isActive = index === activePhaseIndex;
+      const panelId = `phase-panel-${index}`;
+      const buttonId = `phase-button-${index}`;
+      const count = phase.categories.length;
+      const countLabel = `${count} ${count === 1 ? 'category' : 'categories'}`;
+
+      return `<section class="phase-item${isActive ? ' is-active' : ''}">
+        <button class="phase-button" id="${buttonId}" type="button" data-phase-index="${index}" aria-expanded="${isActive}"${isActive ? ` aria-controls="${panelId}"` : ''}>
+          <span>${escapeHtml(phase.name)}</span>
+          <small>${escapeHtml(countLabel)}</small>
+        </button>
+        ${isActive ? `<div class="phase-panel" id="${panelId}" role="region" aria-labelledby="${buttonId}">
+          ${renderCategoryListHtml(phase.categories, activeCategoryIndex)}
         </div>` : ''}
       </section>`;
     })
@@ -415,5 +499,5 @@ function renderExerciseModal() {
 
 if (typeof document !== 'undefined') {
   const initialState = getInitialWorkoutState();
-  loadWorkout(initialState.day, initialState.category);
+  loadWorkout(initialState.day, initialState.phase, initialState.category);
 }

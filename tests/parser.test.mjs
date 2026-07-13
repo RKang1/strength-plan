@@ -10,56 +10,70 @@ import {
   parseWorkoutMarkdown,
   renderCategoryListHtml,
   renderExerciseList,
+  renderPhaseListHtml,
   resolveCategoryIndex,
+  resolvePhaseIndex,
   slugifyCategory,
 } from '../app.mjs';
 
-test('parseWorkoutMarkdown reads the title and categories', () => {
-  const markdown = `# Strength Day
+test('parseWorkoutMarkdown reads the title and nests categories under phases', () => {
+  const markdown = `# Day 1 · Power
 
-## Main Lower Strength
+## Strength
+
+### Main Lower Strength
 
 Sets x Reps: 3-5 x 3-6
 
 - Back Squat
 - Front Squat
 
-## Loaded Carry
+### Loaded Carry
 
 Sets x Reps: 2-4 trips
 
 - Farmer Carry
-`;
 
-  const workout = parseWorkoutMarkdown(markdown, 'strength');
+## Cool-Down
 
-  assert.equal(workout.id, 'strength');
-  assert.equal(workout.title, 'Strength Day');
-  assert.equal(workout.categories.length, 2);
-  assert.deepEqual(workout.categories[0], {
-    name: 'Main Lower Strength',
-    setsReps: '3-5 x 3-6',
-    exercises: ['Back Squat', 'Front Squat'],
-  });
-  assert.deepEqual(workout.categories[1], {
-    name: 'Loaded Carry',
-    setsReps: '2-4 trips',
-    exercises: ['Farmer Carry'],
-  });
-});
-
-test('parseWorkoutMarkdown handles empty exercise lists', () => {
-  const markdown = `# Athletic Day
-
-## Optional Conditioning
+### Optional Conditioning
 
 Sets x Reps: 5-10 min
 `;
 
-  const workout = parseWorkoutMarkdown(markdown, 'athletic');
+  const workout = parseWorkoutMarkdown(markdown, 'day1');
 
-  assert.equal(workout.title, 'Athletic Day');
-  assert.deepEqual(workout.categories, [
+  assert.equal(workout.id, 'day1');
+  assert.equal(workout.title, 'Day 1 · Power');
+  assert.equal(workout.phases.length, 2);
+  assert.equal(workout.phases[0].name, 'Strength');
+  assert.deepEqual(workout.phases[0].categories[0], {
+    name: 'Main Lower Strength',
+    setsReps: '3-5 x 3-6',
+    exercises: ['Back Squat', 'Front Squat'],
+  });
+  assert.deepEqual(workout.phases[0].categories[1], {
+    name: 'Loaded Carry',
+    setsReps: '2-4 trips',
+    exercises: ['Farmer Carry'],
+  });
+  assert.equal(workout.phases[1].name, 'Cool-Down');
+});
+
+test('parseWorkoutMarkdown handles categories with empty exercise lists', () => {
+  const markdown = `# Day 1 · Power
+
+## Cool-Down
+
+### Optional Conditioning
+
+Sets x Reps: 5-10 min
+`;
+
+  const workout = parseWorkoutMarkdown(markdown, 'day1');
+
+  assert.equal(workout.phases.length, 1);
+  assert.deepEqual(workout.phases[0].categories, [
     {
       name: 'Optional Conditioning',
       setsReps: '5-10 min',
@@ -69,27 +83,29 @@ Sets x Reps: 5-10 min
 });
 
 test('parseWorkoutMarkdown preserves grouped exercises within a category', () => {
-  const markdown = `# Athletic Day
+  const markdown = `# Day 1 · Power
 
-## Prehab/Mobility
+## Cool-Down
+
+### Prehab / Mobility
 
 Sets x Reps: 2-3 x 10-20
 
-### Shoulder Health
+#### Shoulder Health
 
 - Face Pull
 - Band Pull-apart
 
-### Hip / Groin
+#### Hip / Groin
 
 - Copenhagen Plank
 - Cossack Squat
 `;
 
-  const workout = parseWorkoutMarkdown(markdown, 'athletic');
+  const workout = parseWorkoutMarkdown(markdown, 'day1');
 
-  assert.deepEqual(workout.categories[0], {
-    name: 'Prehab/Mobility',
+  assert.deepEqual(workout.phases[0].categories[0], {
+    name: 'Prehab / Mobility',
     setsReps: '2-3 x 10-20',
     exercises: [],
     exerciseGroups: [
@@ -134,43 +150,51 @@ test('getNextCategoryIndex collapses the active category when selected again', (
   assert.equal(getNextCategoryIndex(1, 0), 0);
 });
 
-test('getUrlState reads day and category from URL-like objects', () => {
+test('getUrlState reads day, phase, and category from URL-like objects', () => {
   const state = getUrlState({
-    location: {
-      search: '?day=athletic&category=power-development',
-    },
+    location: { search: '?day=day2&phase=strength&category=upper-pull' },
   });
 
-  assert.deepEqual(state, {
-    day: 'athletic',
-    category: 'power-development',
-  });
+  assert.deepEqual(state, { day: 'day2', phase: 'strength', category: 'upper-pull' });
 });
 
 test('getUrlState returns empty values outside browser-like environments', () => {
-  assert.deepEqual(getUrlState(undefined), {
-    day: '',
-    category: '',
-  });
+  assert.deepEqual(getUrlState(undefined), { day: '', phase: '', category: '' });
 });
 
-test('getInitialWorkoutState validates day while preserving requested category', () => {
-  assert.deepEqual(getInitialWorkoutState('?day=athletic&category=power-development'), {
-    day: 'athletic',
-    category: 'power-development',
-  });
-
-  assert.deepEqual(getInitialWorkoutState('?day=missing&category=power-development'), {
-    day: 'strength',
-    category: 'power-development',
-  });
-});
-
-test('buildWorkoutUrl writes day and category query params', () => {
-  assert.equal(
-    buildWorkoutUrl('http://localhost:8000/?day=strength&category=warm-up', 'athletic', 'power-development'),
-    'http://localhost:8000/?day=athletic&category=power-development',
+test('getInitialWorkoutState validates day while preserving phase and category', () => {
+  assert.deepEqual(
+    getInitialWorkoutState('?day=day2&phase=strength&category=upper-pull'),
+    { day: 'day2', phase: 'strength', category: 'upper-pull' },
   );
+
+  assert.deepEqual(
+    getInitialWorkoutState('?day=missing&phase=strength&category=upper-pull'),
+    { day: 'day1', phase: 'strength', category: 'upper-pull' },
+  );
+});
+
+test('buildWorkoutUrl writes day, phase, and category query params', () => {
+  assert.equal(
+    buildWorkoutUrl('http://localhost:8000/?day=day1&phase=athletic&category=jump-landing', 'day2', 'strength', 'upper-pull'),
+    'http://localhost:8000/?day=day2&phase=strength&category=upper-pull',
+  );
+});
+
+test('buildWorkoutUrl drops category when no phase is open', () => {
+  assert.equal(
+    buildWorkoutUrl('http://localhost:8000/?day=day1&phase=athletic&category=jump-landing', 'day1', '', 'upper-pull'),
+    'http://localhost:8000/?day=day1',
+  );
+});
+
+test('resolvePhaseIndex finds phases by slug and defaults to none selected', () => {
+  const phases = [{ name: 'Athletic' }, { name: 'Strength' }, { name: 'Cool-Down' }];
+
+  assert.equal(resolvePhaseIndex(phases, 'strength'), 1);
+  assert.equal(resolvePhaseIndex(phases, 'cool-down'), 2);
+  assert.equal(resolvePhaseIndex(phases, 'missing'), -1);
+  assert.equal(resolvePhaseIndex(phases, ''), -1);
 });
 
 test('buildYoutubeSearchUrl creates an encoded YouTube search URL', () => {
@@ -247,4 +271,84 @@ test('renderCategoryListHtml leaves all categories collapsed without an active c
   assert.match(html, /aria-expanded="false"/);
   assert.doesNotMatch(html, /Back Squat/);
   assert.doesNotMatch(html, /Bench Press/);
+});
+
+test('renderPhaseListHtml expands only the active phase and its active category', () => {
+  const phases = [
+    {
+      name: 'Athletic',
+      categories: [
+        { name: 'Jump / Landing', setsReps: '3-5 x 3-5', exercises: ['Box Jump'] },
+      ],
+    },
+    {
+      name: 'Strength',
+      categories: [
+        { name: 'Upper Pull', setsReps: '3-4 x 4-8', exercises: ['Pull-ups'] },
+        { name: 'Loaded Carry', setsReps: '2-4 trips', exercises: ['Farmer Carry'] },
+      ],
+    },
+  ];
+
+  const html = renderPhaseListHtml(phases, 1, 0);
+
+  assert.match(html, /data-phase-index="0"[^>]*aria-expanded="false"/);
+  assert.match(html, /data-phase-index="1"[^>]*aria-expanded="true"/);
+  assert.doesNotMatch(html, /Jump \/ Landing/);
+  assert.match(html, /Pull-ups/);
+  assert.doesNotMatch(html, /Farmer Carry/);
+});
+
+test('renderPhaseListHtml keeps every phase collapsed without an active phase', () => {
+  const phases = [
+    {
+      name: 'Athletic',
+      categories: [
+        { name: 'Jump / Landing', setsReps: '3-5 x 3-5', exercises: ['Box Jump'] },
+      ],
+    },
+  ];
+
+  const html = renderPhaseListHtml(phases, -1, -1);
+
+  assert.doesNotMatch(html, /aria-expanded="true"/);
+  assert.doesNotMatch(html, /Box Jump/);
+});
+
+test('renderPhaseListHtml only sets aria-controls on the expanded phase', () => {
+  const phases = [
+    {
+      name: 'Athletic',
+      categories: [
+        { name: 'Jump / Landing', setsReps: '3-5 x 3-5', exercises: ['Box Jump'] },
+      ],
+    },
+    {
+      name: 'Strength',
+      categories: [
+        { name: 'Upper Pull', setsReps: '3-4 x 4-8', exercises: ['Pull-ups'] },
+      ],
+    },
+  ];
+
+  const html = renderPhaseListHtml(phases, 1, -1);
+
+  // The collapsed phase renders no panel, so its button must not dangle aria-controls.
+  assert.doesNotMatch(html, /data-phase-index="0"[^>]*aria-controls/);
+  // The expanded phase points aria-controls at the panel it actually renders.
+  assert.match(html, /data-phase-index="1"[^>]*aria-controls="phase-panel-1"/);
+  assert.match(html, /id="phase-panel-1"/);
+});
+
+test('renderCategoryListHtml only sets aria-controls on the expanded category', () => {
+  const categories = [
+    { name: 'Main Lower Strength', setsReps: '3-5 x 3-6', exercises: ['Back Squat'] },
+    { name: 'Main Upper Push', setsReps: '3-4 x 4-8', exercises: ['Bench Press'] },
+  ];
+
+  const html = renderCategoryListHtml(categories, 1);
+
+  assert.doesNotMatch(html, /data-category-index="0"[^>]*aria-controls/);
+  assert.match(html, /data-category-index="1"[^>]*aria-controls="category-panel-1"/);
+  assert.match(html, /id="category-panel-1"/);
 });

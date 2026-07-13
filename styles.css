@@ -100,9 +100,55 @@ h2 {
   font-size: 1rem;
 }
 
-.category-list {
+.phase-list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+}
+
+.phase-item {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.phase-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.phase-button span {
+  font-size: 1.05rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.phase-button small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.phase-item.is-active {
+  border-color: var(--accent);
+}
+
+.phase-panel {
+  display: grid;
+  gap: 12px;
+  padding: 0 12px 12px;
+  animation: reveal-category 160ms ease-out;
+  transform-origin: top;
 }
 
 .category-item {
