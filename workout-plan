@@ -1,58 +1,97 @@
+# How To Use This
+
+Work through the categories **top down**, picking **one exercise** from each.
+Sets x Reps is the dose for that one pick. Where a category has sub-groups, the
+sets are the total across the category — 1 set from each sub-group, or 3 from one.
+
+---
+
 # Day 1 · Power
+
+## Warm-Up
+
+| Category            | Sets x Reps |
+| ------------------- | ----------- |
+| General Raise       | 3–5 min     |
+| Mobility / Activation | 1–2 x 8–12 |
 
 ## Athletic
 
-| Category            | Sets x Reps |
-| ------------------- | ----------- |
-| Jump / Landing      | 3–5 x 3–5   |
-| Olympic / Explosive | 3–5 x 2–4   |
-| Medicine Ball Power | 3–5 x 3–6   |
-| Speed Strength      | 3–5 x 2–5   |
-| Rotational Power    | 2–4 x 5–8   |
+| Category                | Sets x Reps                                    |
+| ----------------------- | ---------------------------------------------- |
+| Jump / Landing          | 3–5 x 3–5                                      |
+| Olympic / Explosive     | 3–5 x 2–4                                      |
+| Rotational / Upper Power | 3–5 x 3–6 (throws) · 3–4 x 6–8 (cable / landmine) |
 
 ## Strength
 
-| Category            | Sets x Reps |
-| ------------------- | ----------- |
+| Category             | Sets x Reps |
+| -------------------- | ----------- |
 | Main Lower — Dynamic | 5–6 x 2–3   |
-| Upper Push          | 3–4 x 4–8   |
-| Posterior Chain     | 2–4 x 5–10  |
+| Upper Push           | 3–4 x 4–8   |
+| Posterior Chain      | 2–4 x 5–10  |
+| Core Stability       | 2–4 x 8–15  |
 
 ## Cool-Down
 
 | Category              | Sets x Reps |
 | --------------------- | ----------- |
-| Prehab / Mobility     | 2–3 x 10–20 |
 | Optional Conditioning | 5–10 min    |
+| Prehab / Mobility     | 2–3 x 10–20 |
 
 ---
 
 # Day 2 · Strength
 
+## Warm-Up
+
+| Category              | Sets x Reps |
+| --------------------- | ----------- |
+| General Raise         | 3–5 min     |
+| Mobility / Activation | 1–2 x 8–12  |
+
 ## Athletic
 
 | Category                | Sets x Reps |
 | ----------------------- | ----------- |
-| Jump / Landing (Primer) | 2–3 x 3     |
 | Balance / Deceleration  | 2–3 x 5–8   |
+| Jump / Landing (Primer) | 2–3 x 3     |
 
 ## Strength
 
-| Category            | Sets x Reps |
-| ------------------- | ----------- |
-| Main Lower — Heavy   | 3–5 x 3–6   |
-| Upper Pull          | 3–4 x 4–8   |
-| Single-Leg Strength | 2–4 x 6–10  |
-| Posterior Chain     | 2–4 x 5–10  |
-| Core Stability      | 2–4 x 8–15  |
-| Loaded Carry        | 2–4 trips   |
+| Category           | Sets x Reps |
+| ------------------ | ----------- |
+| Main Lower — Heavy | 3–5 x 3–6   |
+| Upper Pull         | 3–4 x 4–8   |
+| Posterior Chain    | 2–4 x 5–10  |
+| Single-Leg Strength | 2–4 x 6–10 |
+| Loaded Carry       | 2–4 trips   |
+| Core Stability     | 2–4 x 8–15  |
 
 ## Cool-Down
 
 | Category              | Sets x Reps |
 | --------------------- | ----------- |
-| Prehab / Mobility     | 2–3 x 10–20 |
 | Optional Conditioning | 5–10 min    |
+| Prehab / Mobility     | 2–3 x 10–20 |
+
+---
+
+# Why This Order
+
+- **Warm-Up → Athletic → Strength → Cool-Down.** Max-intent work goes first,
+  while the nervous system is fresh; fatigue-tolerant work goes last.
+- **Day 1** is the fast day: the Athletic block is the main event, and the
+  strength block is moderate load moved fast (dynamic effort). There is no
+  separate "speed strength" category — `Main Lower — Dynamic` *is* the speed work.
+- **Day 2** is the heavy day: Balance / Deceleration preps the landing mechanics,
+  the jump primer potentiates, then the heavy lift follows immediately.
+- **Posterior Chain before Single-Leg** on Day 2 — Bulgarian Split Squats into
+  Nordic Curls is a cramping match, and the posterior chain deserves the fresher
+  slot after a heavy squat.
+- **Conditioning before Prehab / Mobility** — mobility is the actual end of the
+  session. Don't finish your neck work and then go sprint a hill.
+- **Carries before Core** — carries need grip, and grip is already taxed by rows.
 
 ---
 
@@ -63,11 +102,11 @@
 * Back Squat
 * Front Squat
 * Safety Bar Squat
+* Box Squat
+* Zercher Squat
 * Trap Bar Deadlift
 * Conventional Deadlift
-* Romanian Deadlift
-* Zercher Squat
-* Box Squat
+* Jump Squat (Day 1 dynamic only)
 
 ---
 
@@ -76,6 +115,7 @@
 * Bench Press
 * Incline Bench
 * Dumbbell Bench
+* Speed Bench
 * Push Press
 * Standing Overhead Press
 * Landmine Press
@@ -86,10 +126,10 @@
 
 ## Upper Pull
 
+* Weighted Pull-ups
 * Pull-ups
 * Chin-ups
 * Neutral Grip Pull-ups
-* Weighted Pull-ups
 * Barbell Row
 * Chest Supported Row
 * Seal Row
@@ -140,9 +180,9 @@
 
 ### Anti-Lateral Flexion
 
-* Suitcase Carry
-* Offset Carry
 * Side Plank
+* Offset Carry
+* Suitcase Carry (Day 1 only — Day 2 has its own carry category)
 
 ---
 
@@ -179,68 +219,82 @@
 
 ---
 
-# Medicine Ball
-
-### Rotational
-
-* Rotational Throw
-* Side Toss
-* Step-behind Throw
-
-### Linear
-
-* Chest Pass
-* Shot Put Throw
-
-### Vertical
-
-* Overhead Slam
-* Scoop Toss
-* Backward Throw
-
----
-
 # Olympic / Explosive
 
 * Hang Power Clean
 * Hang Clean
-* High Pull
-* Push Press
 * Power Snatch
 * Dumbbell Snatch
-* Trap Bar Jump
+* High Pull
 * Jump Shrug
-
----
-
-# Speed Strength
-
-* Speed Squat
-* Speed Bench
-* Speed Deadlift
+* Trap Bar Jump
 * Kettlebell Swing
-* Jump Squat
-* Med Ball Push Press
 
 ---
 
-# Rotational Power
+# Rotational / Upper Power
+
+Throws are ballistic — the implement leaves your hands, so there is no braking
+phase and the movement stays at max velocity through the finish. Cable and
+landmine work forces you to decelerate before end range, so peak velocity is
+capped. **Take the throws when the gym allows it**; the cable / landmine
+sub-group is the fallback, run at slightly higher reps.
+
+Overhead Slam and Rotational Slam need only a slam ball and a floor — no wall,
+no bounce — so they often survive when the wall throws don't.
+
+### Throws
+
+* Rotational Throw
+* Side Toss
+* Step-behind Throw
+* Chest Pass
+* Shot Put Throw
+* Overhead Slam
+* Rotational Slam
+* Scoop Toss
+* Backward Throw
+
+### Cable / Landmine
 
 * Landmine Rotation
 * Cable Rotation
 * Cable Punch
 * Wood Chop
-* Medicine Ball Rotational Slam
 
 ---
 
 # Balance / Deceleration
 
-* Single-leg RDL
 * Lateral Bound & Stick
 * Single-leg Hop & Stick
 * Drop Lunge
+* Single-leg RDL
 * Y Balance Reach
+
+---
+
+# Warm-Up
+
+### General Raise
+
+* Assault Bike
+* RowErg
+* Jump Rope
+* Light Sled Drag
+
+### Mobility / Activation
+
+* Hip Airplane
+* Adductor Rockback
+* Cossack Squat
+* Leg Swings
+* Band Pull-apart
+* Scap Push-up
+* Serratus Wall Slide
+* Pogo Hops
+* Snap Down
+* A-Skip
 
 ---
 
