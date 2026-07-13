@@ -1,5 +1,39 @@
 # Day 1 · Power
 
+## Warm-Up
+
+### General Raise
+
+Sets x Reps: 3-5 min
+
+- Assault Bike
+- RowErg
+- Jump Rope
+- Light Sled Drag
+
+### Mobility / Activation
+
+Sets x Reps: 1-2 x 8-12
+
+#### Lower
+
+- Hip Airplane
+- Adductor Rockback
+- Cossack Squat
+- Leg Swings
+
+#### Upper
+
+- Band Pull-apart
+- Scap Push-up
+- Serratus Wall Slide
+
+#### Ramp-Up
+
+- Pogo Hops
+- Snap Down
+- A-Skip
+
 ## Athletic
 
 ### Jump / Landing
@@ -22,16 +56,18 @@ Sets x Reps: 3-5 x 2-4
 
 - Hang Power Clean
 - Hang Clean
-- High Pull
-- Push Press
 - Power Snatch
 - Dumbbell Snatch
-- Trap Bar Jump
+- High Pull
 - Jump Shrug
+- Trap Bar Jump
+- Kettlebell Swing
 
-### Medicine Ball Power
+### Rotational / Upper Power
 
-Sets x Reps: 3-5 x 3-6
+Sets x Reps: 3-5 x 3-6 (throws) · 3-4 x 6-8 (cable / landmine)
+
+#### Throws
 
 - Rotational Throw
 - Side Toss
@@ -39,29 +75,16 @@ Sets x Reps: 3-5 x 3-6
 - Chest Pass
 - Shot Put Throw
 - Overhead Slam
+- Rotational Slam
 - Scoop Toss
 - Backward Throw
 
-### Speed Strength
-
-Sets x Reps: 3-5 x 2-5
-
-- Speed Squat
-- Speed Bench
-- Speed Deadlift
-- Kettlebell Swing
-- Jump Squat
-- Med Ball Push Press
-
-### Rotational Power
-
-Sets x Reps: 2-4 x 5-8
+#### Cable / Landmine
 
 - Landmine Rotation
 - Cable Rotation
 - Cable Punch
 - Wood Chop
-- Medicine Ball Rotational Slam
 
 ## Strength
 
@@ -72,10 +95,11 @@ Sets x Reps: 5-6 x 2-3
 - Back Squat
 - Front Squat
 - Safety Bar Squat
+- Box Squat
+- Zercher Squat
 - Trap Bar Deadlift
 - Conventional Deadlift
-- Zercher Squat
-- Box Squat
+- Jump Squat
 
 ### Upper Push
 
@@ -84,6 +108,7 @@ Sets x Reps: 3-4 x 4-8
 - Bench Press
 - Incline Bench
 - Dumbbell Bench
+- Speed Bench
 - Push Press
 - Standing Overhead Press
 - Landmine Press
@@ -103,7 +128,42 @@ Sets x Reps: 2-4 x 5-10
 - Reverse Hyper
 - Back Extension
 
+### Core Stability
+
+Sets x Reps: 2-4 x 8-15
+
+#### Anti-Rotation
+
+- Pallof Press
+- Cable Hold
+- Landmine Hold
+
+#### Anti-Extension
+
+- Ab Wheel
+- Dead Bug
+- Hollow Hold
+- Body Saw
+
+#### Anti-Lateral Flexion
+
+- Side Plank
+- Suitcase Carry
+- Offset Carry
+
 ## Cool-Down
+
+### Optional Conditioning
+
+Sets x Reps: 5-10 min
+
+- Sled Push
+- Sled Pull
+- Hill Sprint
+- Short Shuttle Sprint
+- Assault Bike Sprints
+- RowErg Intervals
+- Battle Ropes (short bursts)
 
 ### Prehab / Mobility
 
@@ -135,15 +195,3 @@ Sets x Reps: 2-3 x 10-20
 - Neck Harness
 - Band-resisted Neck Work
 - Isometric Neck Holds
-
-### Optional Conditioning
-
-Sets x Reps: 5-10 min
-
-- Sled Push
-- Sled Pull
-- Hill Sprint
-- Short Shuttle Sprint
-- Assault Bike Sprints
-- RowErg Intervals
-- Battle Ropes (short bursts)
