@@ -314,3 +314,41 @@ test('renderPhaseListHtml keeps every phase collapsed without an active phase', 
   assert.doesNotMatch(html, /aria-expanded="true"/);
   assert.doesNotMatch(html, /Box Jump/);
 });
+
+test('renderPhaseListHtml only sets aria-controls on the expanded phase', () => {
+  const phases = [
+    {
+      name: 'Athletic',
+      categories: [
+        { name: 'Jump / Landing', setsReps: '3-5 x 3-5', exercises: ['Box Jump'] },
+      ],
+    },
+    {
+      name: 'Strength',
+      categories: [
+        { name: 'Upper Pull', setsReps: '3-4 x 4-8', exercises: ['Pull-ups'] },
+      ],
+    },
+  ];
+
+  const html = renderPhaseListHtml(phases, 1, -1);
+
+  // The collapsed phase renders no panel, so its button must not dangle aria-controls.
+  assert.doesNotMatch(html, /data-phase-index="0"[^>]*aria-controls/);
+  // The expanded phase points aria-controls at the panel it actually renders.
+  assert.match(html, /data-phase-index="1"[^>]*aria-controls="phase-panel-1"/);
+  assert.match(html, /id="phase-panel-1"/);
+});
+
+test('renderCategoryListHtml only sets aria-controls on the expanded category', () => {
+  const categories = [
+    { name: 'Main Lower Strength', setsReps: '3-5 x 3-6', exercises: ['Back Squat'] },
+    { name: 'Main Upper Push', setsReps: '3-4 x 4-8', exercises: ['Bench Press'] },
+  ];
+
+  const html = renderCategoryListHtml(categories, 1);
+
+  assert.doesNotMatch(html, /data-category-index="0"[^>]*aria-controls/);
+  assert.match(html, /data-category-index="1"[^>]*aria-controls="category-panel-1"/);
+  assert.match(html, /id="category-panel-1"/);
+});

@@ -276,18 +276,24 @@ function renderPhaseList() {
 
   container.querySelectorAll('[data-phase-index]').forEach((button) => {
     button.addEventListener('click', () => {
-      currentPhaseIndex = getNextCategoryIndex(currentPhaseIndex, Number(button.dataset.phaseIndex));
+      const phaseIndex = Number(button.dataset.phaseIndex);
+      currentPhaseIndex = getNextCategoryIndex(currentPhaseIndex, phaseIndex);
       currentCategoryIndex = -1;
       updateUrlState();
       renderPhaseList();
+      // The click target was replaced by the re-render; keep keyboard focus on it.
+      container.querySelector(`[data-phase-index="${phaseIndex}"]`)?.focus();
     });
   });
 
   container.querySelectorAll('[data-category-index]').forEach((button) => {
     button.addEventListener('click', () => {
-      currentCategoryIndex = getNextCategoryIndex(currentCategoryIndex, Number(button.dataset.categoryIndex));
+      const categoryIndex = Number(button.dataset.categoryIndex);
+      currentCategoryIndex = getNextCategoryIndex(currentCategoryIndex, categoryIndex);
       updateUrlState();
       renderPhaseList();
+      // The click target was replaced by the re-render; keep keyboard focus on it.
+      container.querySelector(`[data-category-index="${categoryIndex}"]`)?.focus();
     });
   });
 
@@ -311,7 +317,7 @@ export function renderCategoryListHtml(categories, activeIndex) {
       const setsReps = category.setsReps ? formatSetsReps(category.setsReps) : 'No sets listed';
 
       return `<section class="category-item${isActive ? ' is-active' : ''}">
-        <button class="category-button" id="${buttonId}" type="button" data-category-index="${index}" aria-expanded="${isActive}" aria-controls="${panelId}">
+        <button class="category-button" id="${buttonId}" type="button" data-category-index="${index}" aria-expanded="${isActive}"${isActive ? ` aria-controls="${panelId}"` : ''}>
           <span>${escapeHtml(category.name)}</span>
           <small>${escapeHtml(setsReps)}</small>
         </button>
@@ -338,7 +344,7 @@ export function renderPhaseListHtml(phases, activePhaseIndex, activeCategoryInde
       const countLabel = `${count} ${count === 1 ? 'category' : 'categories'}`;
 
       return `<section class="phase-item${isActive ? ' is-active' : ''}">
-        <button class="phase-button" id="${buttonId}" type="button" data-phase-index="${index}" aria-expanded="${isActive}" aria-controls="${panelId}">
+        <button class="phase-button" id="${buttonId}" type="button" data-phase-index="${index}" aria-expanded="${isActive}"${isActive ? ` aria-controls="${panelId}"` : ''}>
           <span>${escapeHtml(phase.name)}</span>
           <small>${escapeHtml(countLabel)}</small>
         </button>
